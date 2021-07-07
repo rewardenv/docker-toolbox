@@ -8,6 +8,7 @@ RUN set -eux \
   && apk add --update --no-cache \
      bash \
      ca-certificates \
+     coreutils \
      curl \
      git \
      openssh-client \

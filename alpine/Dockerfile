@@ -10,6 +10,7 @@ RUN set -eux \
      ca-certificates \
      coreutils \
      curl \
+     findutils \
      git \
      openssh-client \
   && git clone https://github.com/tfutils/tfenv.git ~/.tfenv \

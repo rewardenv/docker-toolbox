@@ -20,4 +20,4 @@ RUN set -eux \
   && chmod +x /usr/local/bin/kubectl \
   && rm -rf /var/cache/apk/*
 
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/bin/bash", "-c"]

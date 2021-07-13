@@ -18,4 +18,4 @@ RUN set -eux \
   && chmod +x /usr/local/bin/kubectl \
   && rm -rf /var/lib/apt/lists/*
 
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/bin/bash", "-c"]

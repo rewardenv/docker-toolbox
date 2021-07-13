@@ -16,7 +16,8 @@ RUN set -eux \
   && curl -fsSLo /usr/local/bin/kubectl \
      "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
   && chmod +x /usr/local/bin/kubectl \
-  && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/* \
+  && ln -sf /bin/bash /bin/sh
 
 ENTRYPOINT ["/bin/bash", "-c"]
 CMD ["/bin/bash"]

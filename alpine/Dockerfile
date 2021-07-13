@@ -19,7 +19,8 @@ RUN set -eux \
      "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
   && chmod +x /usr/local/bin/kubectl \
   && rm -rf /var/cache/apk/* \
-  && sed -i -e "s/bin\/ash/bin\/bash/" /etc/passwd
+  && sed -i -e "s/bin\/ash/bin\/bash/" /etc/passwd \
+  && ln -sf /bin/bash /bin/sh
 
 ENTRYPOINT ["/bin/bash", "-c"]
 CMD ["/bin/bash"]

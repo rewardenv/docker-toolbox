@@ -19,3 +19,4 @@ RUN set -eux \
   && rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT ["/bin/bash", "-c"]
+CMD ["/bin/bash"]

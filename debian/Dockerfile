@@ -4,6 +4,8 @@ FROM ${IMAGE_NAME}:${IMAGE_TAG}
 
 WORKDIR /root
 
+COPY --from=quay.io/terraform-docs/terraform-docs:0.14.1 /usr/local/bin/terraform-docs /usr/local/bin/terraform-docs
+
 RUN set -eux \
   && apt-get update && apt-get install -y --no-install-recommends \
      bash \

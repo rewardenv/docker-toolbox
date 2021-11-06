@@ -15,6 +15,7 @@ RUN set -eux \
      findutils \
      git \
      openssh-client \
+     unzip \
   && git clone https://github.com/tfutils/tfenv.git ~/.tfenv \
   && echo 'PATH=${HOME}/.tfenv/bin:/usr/local/bin:${PATH}' >> ~/.bashrc \
   && curl -fsSLo /usr/local/bin/kubectl \

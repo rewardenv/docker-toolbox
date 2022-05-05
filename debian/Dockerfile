@@ -2,9 +2,10 @@ ARG IMAGE_NAME="debian"
 ARG IMAGE_TAG="10-slim"
 FROM ${IMAGE_NAME}:${IMAGE_TAG}
 
-WORKDIR /root
-
 COPY --from=quay.io/terraform-docs/terraform-docs:0.14.1 /usr/local/bin/terraform-docs /usr/local/bin/terraform-docs
+COPY rootfs/ /
+
+WORKDIR /root
 
 RUN set -eux \
     && apt-get update && apt-get install -y --no-install-recommends \
@@ -12,6 +13,7 @@ RUN set -eux \
     bzip2 \
     ca-certificates \
     curl \
+    default-mysql-client-core \
     git-core \
     gzip \
     openssh-client \
@@ -25,6 +27,9 @@ RUN set -eux \
     && curl -fsSLo /usr/local/bin/kubectl \
       "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
     && chmod +x /usr/local/bin/kubectl \
+    && chmod +x /usr/local/bin/baseurl-update.sh \
+    && chmod +x /usr/local/bin/db-import.sh \
+    && chmod +x /usr/local/bin/media-import.sh \
     && rm -rf /var/lib/apt/lists/* \
     && ln -sf /bin/bash /bin/sh
 

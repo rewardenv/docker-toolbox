@@ -7,20 +7,26 @@ WORKDIR /root
 COPY --from=quay.io/terraform-docs/terraform-docs:0.14.1 /usr/local/bin/terraform-docs /usr/local/bin/terraform-docs
 
 RUN set -eux \
-  && apt-get update && apt-get install -y --no-install-recommends \
-     bash \
-     ca-certificates \
-     curl \
-     git-core \
-     openssh-client \
-     unzip \
-  && git clone https://github.com/tfutils/tfenv.git ~/.tfenv \
-  && echo 'PATH=${HOME}/.tfenv/bin:/usr/local/bin:${PATH}' >> ~/.bashrc \
-  && curl -fsSLo /usr/local/bin/kubectl \
-     "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
-  && chmod +x /usr/local/bin/kubectl \
-  && rm -rf /var/lib/apt/lists/* \
-  && ln -sf /bin/bash /bin/sh
+    && apt-get update && apt-get install -y --no-install-recommends \
+    bash \
+    bzip2 \
+    ca-certificates \
+    curl \
+    git-core \
+    gzip \
+    openssh-client \
+    pigz \
+    tar \
+    unzip \
+    xz-utils \
+    zip \
+    && git clone https://github.com/tfutils/tfenv.git ~/.tfenv \
+    && echo 'PATH=${HOME}/.tfenv/bin:/usr/local/bin:${PATH}' >> ~/.bashrc \
+    && curl -fsSLo /usr/local/bin/kubectl \
+      "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
+    && chmod +x /usr/local/bin/kubectl \
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -sf /bin/bash /bin/sh
 
 ENTRYPOINT ["/bin/bash", "-c"]
 CMD ["/bin/bash"]

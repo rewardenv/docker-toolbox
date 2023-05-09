@@ -8,7 +8,7 @@ log() {
 }
 
 fatal() {
-  echo -e "$*"
+  echo -e "ERROR: $*"
   exit 1
 }
 

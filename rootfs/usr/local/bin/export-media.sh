@@ -1,19 +1,27 @@
 #!/usr/bin/env bash
-
 [ "$DEBUG" = "true" ] && set -x
-set -euo pipefail
+set -uo pipefail
 
 log() {
-  [ "${SILENT}" != "true" ] && echo -e "$*"
+  [ "${SILENT}" != "true" ] && echo -e "INFO: $*"
 }
 
-fatal() {
+error() {
+  exitcode=$?
+
   echo -e "ERROR: $*"
-  exit 1
+
+  if [ "${exitcode}" -eq 0 ]; then
+    exit 1
+  fi
+
+  exit "${exitcode}"
 }
+
+trap 'error status code: $? line: ${LINENO}' ERR
 
 usage() {
-  fatal "$(cat <<EOF
+  error "$(cat <<EOF
 usage: $0 options media-dump.tar.gz
 Options:
 -s, --quiet: suppress messages

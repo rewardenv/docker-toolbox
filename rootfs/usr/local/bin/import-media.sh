@@ -21,7 +21,7 @@ error() {
 trap 'error status code: $? line: ${LINENO}' ERR
 
 usage() {
-  fatal "$(cat <<EOF
+  error "$(cat <<EOF
 usage: $0 options media-dump.tar.gz
 Options:
 -s, --quiet: suppress messages
@@ -87,7 +87,7 @@ while test $# -gt 0; do
       SOURCE_FILE=$(readlink -f "$2")
       set -e
       if [ -z "${SOURCE_FILE:+x}" ]; then
-        fatal "Source file absolute path cannot be read: ${2}"
+        error "Source file absolute path cannot be read: ${2}"
       fi
       shift 2
       ;;
@@ -117,7 +117,7 @@ if [[ ${SOURCE_FILE} =~ (\.tar\.gz|\.tgz|\.tar\.bz2|\.tbz2|\.zip|\.tar\.xz|\.txz
     COMPRESSION="unknown"
   fi
 else
-  fatal "Bad media format! Accepted formats: *.txz, *.tar.xz, *.tar.gz, *.tgz, *.tar.bz2, *.tbz2, *.zip"
+  error "Bad media format! Accepted formats: *.txz, *.tar.xz, *.tar.gz, *.tgz, *.tar.bz2, *.tbz2, *.zip"
 fi
 
 case $COMPRESSION in
@@ -151,7 +151,7 @@ cleanup() {
 
 import_media() {
   if [ ${COMPRESSION} = "unknown" ]; then
-    fatal "Bad media format! Accepted formats:\n*.txz, *.tar.xz, *.tar.gz, *.tgz, *.tar.bz2, *.tbz2, *.zip"
+    error "Bad media format! Accepted formats:\n*.txz, *.tar.xz, *.tar.gz, *.tgz, *.tar.bz2, *.tbz2, *.zip"
   else
     log "Extracting ${COMPRESSION} compressed file: ${SOURCE_FILE} to ${TARGET_DIR}"
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 [ "$DEBUG" = "true" ] && set -x
-set -uo pipefail
+set -euo pipefail
 
 log() {
   [ "${SILENT}" != "true" ] && echo -e "INFO: $*"
@@ -51,6 +51,7 @@ MYSQL_PORT="${MYSQL_PORT:-3306}"
 MYSQL_SCHEME="${MYSQL_SCHEME:-magento}"
 MYSQL_USER="${MYSQL_USER:-magento}"
 MYSQL_PASSWORD="${MYSQL_PASSWORD:-magento}"
+MYSQL_CONNECTION_ARGS=""
 FILE_EXTENSION=".sql.gz"
 COMPRESS_COMMAND="gzip -c"
 STRIP="${STRIP:-false}"
@@ -135,10 +136,10 @@ while test $# -gt 0; do
   esac
 done
 
-if [ -n "${MYSQL_HOST}" ]; then MYSQLDUMP_ARGS+=" --host=${MYSQL_HOST}"; fi
-if [ -n "${MYSQL_PORT}" ]; then MYSQLDUMP_ARGS+=" --port=${MYSQL_PORT}"; fi
-if [ -n "${MYSQL_USER}" ]; then MYSQLDUMP_ARGS+=" --user=${MYSQL_USER}"; fi
-if [ -n "${MYSQL_PASSWORD}" ]; then MYSQLDUMP_ARGS+=" --password=${MYSQL_PASSWORD}"; fi
+if [ -n "${MYSQL_HOST}" ]; then MYSQL_CONNECTION_ARGS+=" --host=${MYSQL_HOST}"; fi
+if [ -n "${MYSQL_PORT}" ]; then MYSQL_CONNECTION_ARGS+=" --port=${MYSQL_PORT}"; fi
+if [ -n "${MYSQL_USER}" ]; then MYSQL_CONNECTION_ARGS+=" --user=${MYSQL_USER}"; fi
+if [ -n "${MYSQL_PASSWORD}" ]; then MYSQL_CONNECTION_ARGS+=" --password=${MYSQL_PASSWORD}"; fi
 
 build_strip_args() {
   if [ "${STRIP}" = "true" ]; then
@@ -158,7 +159,12 @@ build_strip_args() {
 
 create_dir() {
   mkdir -p "${TARGET_DIR}"
-  cd "${TARGET_DIR}"
+  cd "${TARGET_DIR}" || error "Cannot change directory to ${TARGET_DIR}"
+}
+
+wait_connection_ready() {
+  log "Waiting for mysql connection to be ready..."
+  timeout 30 bash -c -- "while ! mysqladmin ping ${MYSQL_CONNECTION_ARGS} --silent; do sleep 5; done"
 }
 
 export_db() {
@@ -168,13 +174,14 @@ export_db() {
   create_dir
 
   if [ "${STRIP}" = "true" ]; then
-    eval "${MYSQLDUMP_COMMAND} ${MYSQLDUMP_ARGS} ${STRIPPED_ARGS} | ${COMPRESS_COMMAND} > ./${TARGET_FILENAME}${FILE_EXTENSION}"
-    eval "${MYSQLDUMP_COMMAND} ${MYSQLDUMP_ARGS} ${IGNORED_TABLES_ARGS} | ${COMPRESS_COMMAND} >> ./${TARGET_FILENAME}${FILE_EXTENSION}"
+    eval "${MYSQLDUMP_COMMAND} ${MYSQL_CONNECTION_ARGS} ${MYSQLDUMP_ARGS} ${STRIPPED_ARGS} | ${COMPRESS_COMMAND} > ./${TARGET_FILENAME}${FILE_EXTENSION}"
+    eval "${MYSQLDUMP_COMMAND} ${MYSQL_CONNECTION_ARGS} ${MYSQLDUMP_ARGS} ${IGNORED_TABLES_ARGS} | ${COMPRESS_COMMAND} >> ./${TARGET_FILENAME}${FILE_EXTENSION}"
   else
-    eval "${MYSQLDUMP_COMMAND} ${MYSQLDUMP_ARGS} ${MYSQL_SCHEME} | ${COMPRESS_COMMAND} > ./${TARGET_FILENAME}${FILE_EXTENSION}"
+    eval "${MYSQLDUMP_COMMAND} ${MYSQL_CONNECTION_ARGS} ${MYSQLDUMP_ARGS} ${MYSQL_SCHEME} | ${COMPRESS_COMMAND} > ./${TARGET_FILENAME}${FILE_EXTENSION}"
   fi
 }
 
+wait_connection_ready
 export_db
 
 log "Done."

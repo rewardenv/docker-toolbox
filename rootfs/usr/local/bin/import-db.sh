@@ -46,6 +46,7 @@ MYSQL_PORT="${MYSQL_PORT:-3306}"
 MYSQL_SCHEME="${MYSQL_SCHEME:-magento}"
 MYSQL_USER="${MYSQL_USER:-magento}"
 MYSQL_PASSWORD="${MYSQL_PASSWORD:-magento}"
+MYSQL_CONNECTION_ARGS=""
 MYSQL_DEFINER_HOST="${MYSQL_DEFINER_HOST:-localhost}"
 SILENT="${SILENT:-false}"
 SOURCE_FILE="${SOURCE_FILE:-}"
@@ -108,10 +109,10 @@ if [ -z "${SOURCE_FILE:+x}" ]; then
   usage
 fi
 
-if [ -n "${MYSQL_HOST}" ]; then MYSQL_ARGS+=" --host=${MYSQL_HOST}"; fi
-if [ -n "${MYSQL_PORT}" ]; then MYSQL_ARGS+=" --port=${MYSQL_PORT}"; fi
-if [ -n "${MYSQL_USER}" ]; then MYSQL_ARGS+=" --user=${MYSQL_USER}"; fi
-if [ -n "${MYSQL_PASSWORD}" ]; then MYSQL_ARGS+=" --password=${MYSQL_PASSWORD}"; fi
+if [ -n "${MYSQL_HOST}" ]; then MYSQL_CONNECTION_ARGS+=" --host=${MYSQL_HOST}"; fi
+if [ -n "${MYSQL_PORT}" ]; then MYSQL_CONNECTION_ARGS+=" --port=${MYSQL_PORT}"; fi
+if [ -n "${MYSQL_USER}" ]; then MYSQL_CONNECTION_ARGS+=" --user=${MYSQL_USER}"; fi
+if [ -n "${MYSQL_PASSWORD}" ]; then MYSQL_CONNECTION_ARGS+=" --password=${MYSQL_PASSWORD}"; fi
 
 if [[ ${SOURCE_FILE} =~ (\.sql|\.sql\.gz|\.sql\.gzip|\.gz|\.gzip|\.sql\.bz2|\.bz2|\.sql\.zip|\.zip|\.sql\.xz|\.xz)$ ]]; then
   EXTENSION=${BASH_REMATCH[1]}
@@ -141,26 +142,33 @@ uncompressed)
   ;;
 esac
 
+wait_connection_ready() {
+  log "Waiting for mysql connection to be ready..."
+  timeout 30 bash -c -- "while ! mysqladmin ping ${MYSQL_CONNECTION_ARGS} --silent; do sleep 5; done"
+}
+
 recreate_database() {
   log "Dropping database ${MYSQL_SCHEME}..."
   # shellcheck disable=SC2089
   DROP_ARGS="${MYSQL_ARGS}"
   DROP_ARGS+=" -e 'DROP DATABASE ${MYSQL_SCHEME}; CREATE DATABASE ${MYSQL_SCHEME};'"
-  eval "${MYSQL_COMMAND} ${DROP_ARGS[*]}"
+  eval "${MYSQL_COMMAND} ${MYSQL_CONNECTION_ARGS} ${DROP_ARGS[*]}"
 }
 
 import_database() {
   if [ ${COMPRESSION} = "uncompressed" ]; then
     log "Importing raw file: ${SOURCE_FILE}"
     # shellcheck disable=SC2086
-    eval "${SED_COMMAND} '${SED_ARGS[*]}' ${SOURCE_FILE} | ${MYSQL_COMMAND} ${MYSQL_ARGS} ${MYSQL_SCHEME}"
+    eval "${SED_COMMAND} '${SED_ARGS[*]}' ${SOURCE_FILE} | ${MYSQL_COMMAND} ${MYSQL_CONNECTION_ARGS} ${MYSQL_ARGS} ${MYSQL_SCHEME}"
   else
     log "Importing ${COMPRESSION} compressed file: ${SOURCE_FILE}"
 
     # shellcheck disable=SC2086
-    eval "${UNCOMPRESS_COMMAND} < ${SOURCE_FILE} | ${SED_COMMAND} '${SED_ARGS[*]}' | ${MYSQL_COMMAND} ${MYSQL_ARGS} ${MYSQL_SCHEME}"
+    eval "${UNCOMPRESS_COMMAND} < ${SOURCE_FILE} | ${SED_COMMAND} '${SED_ARGS[*]}' | ${MYSQL_COMMAND} ${MYSQL_CONNECTION_ARGS} ${MYSQL_ARGS} ${MYSQL_SCHEME}"
   fi
 }
+
+wait_connection_ready
 
 if [ "${MYSQL_DROP:-false}" = "true" ]; then
   recreate_database

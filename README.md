@@ -21,7 +21,6 @@ docker run --rm -it rewardenv/docker-toolbox bash
 
 - latest, alpine-latest
 - debian-bullseye-slim
-- debian-buster-slim
 
 ## Build
 

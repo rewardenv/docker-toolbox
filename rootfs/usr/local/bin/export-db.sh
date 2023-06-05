@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 [ "$DEBUG" = "true" ] && set -x
-set -euo pipefail
+set -eEuo pipefail
 
 log() {
   [ "${SILENT}" != "true" ] && echo -e "INFO: $*"

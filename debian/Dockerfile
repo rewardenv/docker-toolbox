@@ -1,5 +1,5 @@
 ARG IMAGE_NAME="debian"
-ARG IMAGE_TAG="10-slim"
+ARG IMAGE_TAG="bullseye-slim"
 FROM ${IMAGE_NAME}:${IMAGE_TAG}
 
 COPY --from=quay.io/terraform-docs/terraform-docs:0.14.1 /usr/local/bin/terraform-docs /usr/local/bin/terraform-docs
@@ -15,6 +15,7 @@ RUN set -eux \
     curl \
     default-mysql-client-core \
     git-core \
+    git-crypt \
     gzip \
     openssh-client \
     pigz \

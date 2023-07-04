@@ -7,6 +7,8 @@ COPY rootfs/ /
 
 WORKDIR /root
 
+ENV PATH="${HOME}/.tfenv/bin:/usr/local/bin:${PATH}"
+
 RUN set -eux \
     && apt-get update && apt-get install -y --no-install-recommends \
     bash \
@@ -17,6 +19,7 @@ RUN set -eux \
     git-core \
     git-crypt \
     gzip \
+    jq \
     openssh-client \
     pigz \
     tar \
@@ -24,7 +27,6 @@ RUN set -eux \
     xz-utils \
     zip \
     && git clone https://github.com/tfutils/tfenv.git ~/.tfenv \
-    && echo 'PATH=${HOME}/.tfenv/bin:/usr/local/bin:${PATH}' >> ~/.bashrc \
     && curl -fsSLo /usr/local/bin/kubectl \
       "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
     && chmod +x /usr/local/bin/kubectl \

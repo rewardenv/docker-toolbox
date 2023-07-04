@@ -7,6 +7,8 @@ COPY rootfs/ /
 
 WORKDIR /root
 
+ENV PATH="${HOME}/.tfenv/bin:/usr/local/bin:${PATH}"
+
 RUN set -eux \
     && apk add --update --no-cache \
     bash \
@@ -18,6 +20,7 @@ RUN set -eux \
     git \
     git-crypt \
     gzip \
+    jq \
     mysql-client \
     openssh-client \
     pigz \

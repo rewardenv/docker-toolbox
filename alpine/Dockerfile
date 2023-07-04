@@ -16,6 +16,7 @@ RUN set -eux \
     curl \
     findutils \
     git \
+    git-crypt \
     gzip \
     mysql-client \
     openssh-client \

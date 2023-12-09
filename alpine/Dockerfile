@@ -8,6 +8,8 @@ COPY rootfs/ /
 WORKDIR /root
 
 ENV PATH="${HOME}/.tfenv/bin:/usr/local/bin:${PATH}"
+ENV HELM_VERSION=3.13.2
+ENV HELM_RELEASE_FILE="helm-v${HELM_VERSION}-linux-amd64.tar.gz"
 
 RUN set -eux \
     && apk add --update --no-cache \
@@ -33,6 +35,10 @@ RUN set -eux \
     && curl -fsSLo /usr/local/bin/kubectl  \
         "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
     && chmod +x /usr/local/bin/kubectl \
+    && cd /tmp \
+    && curl -L https://get.helm.sh/${RELEASE_FILE} | tar xvz \
+    && mv linux-amd64/helm /usr/local/bin/helm \
+    && chmod +x /usr/local/bin/helm \
     && chmod +x /usr/local/bin/baseurl-update.sh \
     && chmod +x /usr/local/bin/import-db.sh \
     && chmod +x /usr/local/bin/import-media.sh \

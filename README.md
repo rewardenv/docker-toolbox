@@ -6,6 +6,7 @@ A docker toolbox image based on alpine/debian with these tools included:
 - curl
 - tfenv
 - kubectl
+- helm
 - mysql-client
 - coreutils (for advanced base64 in alpine)
 - findutils (for advanced xargs in alpine)

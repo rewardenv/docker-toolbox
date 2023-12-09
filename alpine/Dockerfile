@@ -36,7 +36,7 @@ RUN set -eux \
         "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
     && chmod +x /usr/local/bin/kubectl \
     && cd /tmp \
-    && curl -L https://get.helm.sh/${RELEASE_FILE} | tar xvz \
+    && curl -L https://get.helm.sh/${HELM_RELEASE_FILE} | tar xvz \
     && mv linux-amd64/helm /usr/local/bin/helm \
     && chmod +x /usr/local/bin/helm \
     && chmod +x /usr/local/bin/baseurl-update.sh \

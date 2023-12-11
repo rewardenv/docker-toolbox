@@ -5,6 +5,7 @@ A docker toolbox image based on alpine/debian with these tools included:
 - git
 - curl
 - tfenv
+- tgenv
 - kubectl
 - helm
 - mysql-client

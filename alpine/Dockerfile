@@ -30,15 +30,16 @@ RUN set -eux \
     unzip \
     xz \
     zip \
-    && git clone https://github.com/tfutils/tfenv.git ~/.tfenv \
-    && echo 'PATH=${HOME}/.tfenv/bin:/usr/local/bin:${PATH}' >> ~/.bashrc \
+    && git clone --depth 1 https://github.com/tfutils/tfenv.git ~/.tfenv \
+    && git clone --depth 1 https://github.com/tgenv/tgenv.git ~/.tgenv \
+    && echo 'PATH=${HOME}/.tfenv/bin:${HOME}/.tgenv/bin:/usr/local/bin:${PATH}' >> ~/.bashrc \
     && curl -fsSLo /usr/local/bin/kubectl  \
         "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
-    && chmod +x /usr/local/bin/kubectl \
     && cd /tmp \
     && curl -L https://get.helm.sh/${HELM_RELEASE_FILE} | tar xvz \
     && mv linux-amd64/helm /usr/local/bin/helm \
     && chmod +x /usr/local/bin/helm \
+    && chmod +x /usr/local/bin/kubectl \
     && chmod +x /usr/local/bin/baseurl-update.sh \
     && chmod +x /usr/local/bin/import-db.sh \
     && chmod +x /usr/local/bin/import-media.sh \

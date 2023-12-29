@@ -54,10 +54,17 @@ done
 shift "$((OPTIND - 1))"
 
 if [[ ${DRY_RUN} ]]; then
-  DOCKER="echo docker"
+  DOCKER_COMMAND="echo docker"
 else
-  DOCKER="docker"
+  DOCKER_COMMAND="docker"
 fi
+
+if [ "${DOCKER_USE_BUILDX}" = "true" ]; then
+  DOCKER_BUILD_COMMAND=${DOCKER_BUILD_COMMAND:-buildx build}
+else
+  DOCKER_BUILD_COMMAND=${DOCKER_BUILD_COMMAND:-build}
+fi
+DOCKER_BUILD_PLATFORM=${DOCKER_BUILD_PLATFORM:-} # "linux/amd64,linux/arm/v7,linux/arm64"
 
 # If FROM_IMAGE is defined, then we use it as the base image for all builds. In that case FROM_TAG is derived from it.
 #  Else the FROM_IMAGE and the FROM_TAG are derived from the DOCKER_BASE_IMAGE.
@@ -81,15 +88,15 @@ function docker_login() {
   if [[ ${PUSH} ]]; then
     if [[ ${DOCKER_USERNAME:-} ]]; then
       echo "Attempting non-interactive docker login (via provided credentials)"
-      echo "${DOCKER_PASSWORD:-}" | ${DOCKER} login -u "${DOCKER_USERNAME:-}" --password-stdin "${DOCKER_REGISTRY}"
+      echo "${DOCKER_PASSWORD:-}" | ${DOCKER_COMMAND} login -u "${DOCKER_USERNAME:-}" --password-stdin "${DOCKER_REGISTRY}"
     elif [[ -t 1 ]]; then
       echo "Attempting interactive docker login (tty)"
-      ${DOCKER} login "${DOCKER_REGISTRY}"
+      ${DOCKER_COMMAND} login "${DOCKER_REGISTRY}"
     fi
   fi
 }
 
-function build_image() {
+function docker_build() {
   if [ -n "${DOCKER_BUILD_PLATFORM}" ]; then
     DOCKER_BUILD_PLATFORM_ARG="--platform ${DOCKER_BUILD_PLATFORM}"
   fi
@@ -100,32 +107,46 @@ function build_image() {
   TAG_SUFFIX="${ORIGIN_IMAGE}-${ORIGIN_TAG}"
 
   IMAGE_TAG+=":${TAG_SUFFIX}"
+  BUILD_TAGS=(
+    "${IMAGE_TAG}:${TAG_SUFFIX}"
+  )
 
-  BUILD_CONTEXT="images/${FLAVOR:-default}"
-  BUILD_ARGS+=("--build-arg")
-  BUILD_ARGS+=("IMAGE_NAME=${FROM_IMAGE}")
-  BUILD_ARGS+=("--build-arg")
-  BUILD_ARGS+=("IMAGE_TAG=${FROM_TAG}")
-
-  printf "\e[01;31m==> building %s from %s/Dockerfile with context %s\033[0m\n" "${IMAGE_TAG}" "${BUILD_DIR}" "${BUILD_CONTEXT}"
-  ${DOCKER} build \
-    -t "${IMAGE_TAG}" \
-    -f "${BUILD_DIR}/Dockerfile" \
-    ${DOCKER_BUILD_PLATFORM_ARG} \
-    "${BUILD_ARGS[@]}" \
-    "${BUILD_CONTEXT}"
-
-  if [[ -n "${LATEST_TAG:+x}" && ${LATEST_TAG} = "true" ]]; then
-    LATEST_TAG=$(echo "${IMAGE_TAG}" | sed -r "s/([^:]*:).*/\1latest/")
-    ${DOCKER} tag "${IMAGE_TAG}" "${LATEST_TAG}"
-    printf "\e[01;31m==> Successfully tagged %s\033[0m\n" "${LATEST_TAG}"
-    [[ $PUSH ]] && PUSH_LATEST=true
+  if [ "${LATEST_TAG:-}" = "true" ]; then
+    BUILD_TAGS+=(
+      "${IMAGE_TAG}:latest"
+    )
   fi
 
-  [[ $PUSH ]] && ${DOCKER} push "${IMAGE_TAG}"
-  [[ $PUSH_LATEST ]] && ${DOCKER} push "${LATEST_TAG}"
+  BUILD_CONTEXT="images/${FLAVOR:-default}"
+  BUILD_ARGS+=("IMAGE_NAME=${FROM_IMAGE}")
+  BUILD_ARGS+=("IMAGE_TAG=${FROM_TAG}")
 
-  unset PUSH_SHORT PUSH_LATEST
+  if [ "${PUSH}" = "true" ] && [ "${DOCKER_USE_BUILDX}" = "true" ]; then
+    DOCKER_PUSH_ARG="--push"
+    TAGS_ARG=$(printf -- "%s " "${BUILD_TAGS[@]/#/--tag }")
+  else
+    TAGS_ARG="-t ${IMAGE_TAG}"
+  fi
+
+  # shellcheck disable=SC2046
+  # shellcheck disable=SC2086
+  printf "\e[01;31m==> building %s from %s/Dockerfile with context %s\033[0m\n" "${IMAGE_TAG}" "${BUILD_DIR}" "${BUILD_CONTEXT}"
+  ${DOCKER_COMMAND} ${DOCKER_BUILD_COMMAND} \
+    ${TAGS_ARG} \
+    -f "${BUILD_DIR}/Dockerfile" \
+    ${DOCKER_BUILD_PLATFORM_ARG} \
+    ${DOCKER_PUSH_ARG} \
+    $(printf -- "%s " "${BUILD_ARGS[@]/#/--build-arg }") \
+    "${BUILD_CONTEXT}"
+
+  # We have to manually push the images if not using docker buildx
+  if [ "${DOCKER_USE_BUILDX}" != "true" ]; then
+    for tag in "${BUILD_TAGS[@]}"; do
+      ${DOCKER_COMMAND} tag "${IMAGE_TAG}" "${tag}"
+
+      if [ "${PUSH}" = "true" ]; then ${DOCKER_COMMAND} push "${tag}"; fi
+    done
+  fi
 
   return 0
 }
@@ -134,7 +155,7 @@ function build_image() {
 docker_login
 
 for file in $(find "images/${FLAVOR:-default}/${ORIGIN_IMAGE}" -type f -name Dockerfile | sort -t_ -k1,1 -d); do
-  build_image
+  docker_build
 done
 
 exit 0

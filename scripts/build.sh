@@ -16,8 +16,7 @@ readonly BASE_DIR="$(
 pushd "${BASE_DIR}" >/dev/null
 
 DOCKER_REGISTRY="docker.io"
-IMAGE_BASE="${DOCKER_REGISTRY}/rewardenv"
-DEFAULT_BASE=${DEFAULT_BASE:-'alpine:latest'}
+IMAGE_REPO="${DOCKER_REGISTRY}/rewardenv"
 
 function print_usage() {
   echo "build.sh [--push] [--dry-run] <IMAGE_TYPE>"
@@ -54,17 +53,25 @@ while getopts "pnh" opt; do
 done
 shift "$((OPTIND - 1))"
 
-FROM_IMAGE="$(echo "${DOCKER_BASE_IMAGE}" | cut -d: -f1)"
-FROM_TAG="$(echo "${DOCKER_BASE_IMAGE}" | cut -d: -f2)"
-
 if [[ ${DRY_RUN} ]]; then
   DOCKER="echo docker"
 else
   DOCKER="docker"
 fi
 
-## since fpm images no longer can be traversed, this script should require a search path vs defaulting to build all
-if [[ -z ${FROM_IMAGE} ]]; then
+# If FROM_IMAGE is defined, then we use it as the base image for all builds. In that case FROM_TAG is derived from it.
+#  Else the FROM_IMAGE and the FROM_TAG are derived from the DOCKER_BASE_IMAGE.
+if [ -n "${FROM_IMAGE}" ]; then
+  FROM_TAG="$(echo "${DOCKER_BASE_IMAGE}" | sed -e 's/:/-/g')"
+else
+  FROM_IMAGE="$(echo "${DOCKER_BASE_IMAGE}" | cut -d: -f1)"
+  FROM_TAG="$(echo "${DOCKER_BASE_IMAGE}" | cut -d: -f2)"
+fi
+
+ORIGIN_IMAGE="$(echo "${DOCKER_BASE_IMAGE}" | cut -d: -f1)"
+ORIGIN_TAG="$(echo "${DOCKER_BASE_IMAGE}" | cut -d: -f2)"
+
+if [ -z "${ORIGIN_IMAGE}" ]; then
   printf >&2 "\n\e[01;31mError: Missing DOCKER_BASE_IMAGE. Please set it using DOCKER_BASE_IMAGE env var!\033[0m\n"
   print_usage
   exit 1
@@ -84,13 +91,13 @@ function docker_login() {
 
 function build_image() {
   BUILD_DIR="$(dirname "${file}")"
-  IMAGE_NAME="docker-toolbox"
-  IMAGE_TAG="${IMAGE_BASE}/${IMAGE_NAME}"
-  TAG_SUFFIX="${FROM_IMAGE}-${FROM_TAG}"
+  IMAGE_NAME="${IMAGE_NAME:-docker-toolbox}"
+  IMAGE_TAG="${IMAGE_REPO}/${IMAGE_NAME}"
+  TAG_SUFFIX="${ORIGIN_IMAGE}-${ORIGIN_TAG}"
 
   IMAGE_TAG+=":${TAG_SUFFIX}"
 
-  BUILD_CONTEXT="."
+  BUILD_CONTEXT="${FLAVOR:-default}"
   BUILD_ARGS+=("--build-arg")
   BUILD_ARGS+=("IMAGE_NAME=${FROM_IMAGE}")
   BUILD_ARGS+=("--build-arg")
@@ -121,7 +128,7 @@ function build_image() {
 ## Login to docker hub as needed
 docker_login
 
-for file in $(find "${FROM_IMAGE}" -type f -name Dockerfile | sort -t_ -k1,1 -d); do
+for file in $(find "images/${FLAVOR:-default}/${ORIGIN_IMAGE}" -type f -name Dockerfile | sort -t_ -k1,1 -d); do
   build_image
 done
 

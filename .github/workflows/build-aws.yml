@@ -1,16 +1,15 @@
 ---
-name: Docker Image
+name: Docker Image AWS
 on:
-  schedule:
-    - cron: "0 6 1 * *"
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: [ "Docker Image Default" ]
+    branches: [ main ]
+    types:
+      - completed
 jobs:
   build:
     name: Build
-    runs-on: github-actions-runner-reward
-#    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         docker_base_images: ["alpine:3.14", "debian:bullseye-slim"]
@@ -22,6 +21,9 @@ jobs:
       - uses: actions/checkout@v1
       - run: bash ./scripts/build.sh
         env:
+          FLAVOR: "aws"
+          FROM_IMAGE: "rewardenv/docker-toolbox"
+          IMAGE_NAME: "docker-toolbox-aws"
           DOCKER_BASE_IMAGE: ${{ matrix.docker_base_images }}
           LATEST_TAG: ${{ matrix.latest_tag }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}

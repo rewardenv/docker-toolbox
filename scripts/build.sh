@@ -90,6 +90,10 @@ function docker_login() {
 }
 
 function build_image() {
+  if [ -n "${DOCKER_BUILD_PLATFORM}" ]; then
+    DOCKER_BUILD_PLATFORM_ARG="--platform ${DOCKER_BUILD_PLATFORM}"
+  fi
+
   BUILD_DIR="$(dirname "${file}")"
   IMAGE_NAME="${IMAGE_NAME:-docker-toolbox}"
   IMAGE_TAG="${IMAGE_REPO}/${IMAGE_NAME}"
@@ -107,6 +111,7 @@ function build_image() {
   ${DOCKER} build \
     -t "${IMAGE_TAG}" \
     -f "${BUILD_DIR}/Dockerfile" \
+    ${DOCKER_BUILD_PLATFORM_ARG} \
     "${BUILD_ARGS[@]}" \
     "${BUILD_CONTEXT}"
 

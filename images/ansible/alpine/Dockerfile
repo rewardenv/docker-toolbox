@@ -8,8 +8,8 @@ RUN set -eux \
     python3 \
     py3-pip \
     py3-cryptography \
-    && pip3 install --upgrade pip \
-    && pip3 install --no-cache-dir \
+    && pip3 install --upgrade pip --break-system-packages \
+    && pip3 install --no-cache-dir --break-system-packages \
     'ansible<2.11' \
     'hcloud' \
     && echo "nameserver 8.8.8.8" > /etc/resolv.conf

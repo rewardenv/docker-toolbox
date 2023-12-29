@@ -8,7 +8,7 @@ RUN set -eux \
     && apk add --update --no-cache \
     python3 \
     py3-pip \
-    && pip3 install --no-cache-dir \
+    && pip3 install --no-cache-dir --break-system-packages \
     awscli \
     && curl -fsSLo /tmp/google-cloud-sdk.tar.gz \
     https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz \

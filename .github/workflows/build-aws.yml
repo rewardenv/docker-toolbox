@@ -19,6 +19,18 @@ jobs:
             latest_tag: "true"
     steps:
       - uses: actions/checkout@v1
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+          driver-opts: image=moby/buildkit:master
       - run: bash ./scripts/build.sh
         env:
           FLAVOR: "aws"
@@ -26,7 +38,6 @@ jobs:
           IMAGE_NAME: "docker-toolbox-aws"
           DOCKER_BASE_IMAGE: ${{ matrix.docker_base_images }}
           LATEST_TAG: ${{ matrix.latest_tag }}
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           PUSH: "true"
+          DOCKER_USE_BUILDX: "true"
           DOCKER_BUILD_PLATFORM: "linux/amd64,linux/arm/v7,linux/arm64"

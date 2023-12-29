@@ -8,7 +8,10 @@ RUN set -eux \
     && apk add --update --no-cache \
     python3 \
     py3-pip \
-    && pip3 install --no-cache-dir --break-system-packages \
+    && PIP_ARGS="" \
+    && eval 'version_gt() { test "$(printf "%s\n" "$@" | sort -V | head -n 1)" != "$1"; }' \
+    && if version_gt "$(cat /etc/os-release | grep 'VERSION_ID=' | cut -d'=' -f2)" "3.18.99"; then PIP_ARGS="--break-system-packages"; fi \
+    && pip3 install --no-cache-dir $PIP_ARGS \
     awscli \
     && curl -fsSLo /tmp/google-cloud-sdk.tar.gz \
     https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz \

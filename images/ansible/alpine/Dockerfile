@@ -8,8 +8,10 @@ RUN set -eux \
     python3 \
     py3-pip \
     py3-cryptography \
-    && pip3 install --upgrade pip --break-system-packages \
-    && pip3 install --no-cache-dir --break-system-packages \
+    && PIP_ARGS="" \
+    && eval 'version_gt() { test "$(printf "%s\n" "$@" | sort -V | head -n 1)" != "$1"; }' \
+    && if version_gt "$(cat /etc/os-release | grep 'VERSION_ID=' | cut -d'=' -f2)" "3.18.99"; then PIP_ARGS="--break-system-packages"; fi \
+    && pip3 install --upgrade pip $PIP_ARGS \
+    && pip3 install --no-cache-dir $PIP_ARGS \
     'ansible<2.11' \
-    'hcloud' \
-    && echo "nameserver 8.8.8.8" > /etc/resolv.conf
+    'hcloud'

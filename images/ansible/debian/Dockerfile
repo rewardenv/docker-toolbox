@@ -10,7 +10,7 @@ RUN set -eux \
     python3-setuptools \
     && PIP_ARGS="" \
     && eval 'version_gt() { test "$(printf "%s\n" "$@" | sort -V | head -n 1)" != "$1"; }' \
-    && if version_gt "$(cat /etc/os-release | grep 'VERSION_ID=' | cut -d'=' -f2)" "11.99"; then PIP_ARGS="--break-system-packages"; fi \
+    && if version_gt "$(cat /etc/os-release | grep 'VERSION_ID=' | cut -d'=' -f2)" "11"; then PIP_ARGS="--break-system-packages"; fi \
     && pip3 install --upgrade pip ${PIP_ARGS} \
     && pip3 install --no-cache-dir ${PIP_ARGS} \
     'ansible<2.11' \

@@ -106,7 +106,6 @@ function docker_build() {
   IMAGE_TAG="${IMAGE_REPO}/${IMAGE_NAME}"
   TAG_SUFFIX="${ORIGIN_IMAGE}-${ORIGIN_TAG}"
 
-  IMAGE_TAG+=":${TAG_SUFFIX}"
   BUILD_TAGS=(
     "${IMAGE_TAG}:${TAG_SUFFIX}"
   )
@@ -125,7 +124,7 @@ function docker_build() {
     DOCKER_PUSH_ARG="--push"
     TAGS_ARG=$(printf -- "%s " "${BUILD_TAGS[@]/#/--tag }")
   else
-    TAGS_ARG="-t ${IMAGE_TAG}"
+    TAGS_ARG="--tag ${IMAGE_TAG}"
   fi
 
   # shellcheck disable=SC2046

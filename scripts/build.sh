@@ -97,7 +97,7 @@ function build_image() {
 
   IMAGE_TAG+=":${TAG_SUFFIX}"
 
-  BUILD_CONTEXT="${FLAVOR:-default}"
+  BUILD_CONTEXT="images/${FLAVOR:-default}"
   BUILD_ARGS+=("--build-arg")
   BUILD_ARGS+=("IMAGE_NAME=${FROM_IMAGE}")
   BUILD_ARGS+=("--build-arg")

@@ -7,6 +7,9 @@ RUN set -eux \
     python3 \
     python3-pip \
     python3-setuptools \
-    && pip3 install --no-cache-dir \
+    && PIP_ARGS="" \
+    && eval 'version_gt() { test "$(printf "%s\n" "$@" | sort -V | head -n 1)" != "$1"; }' \
+    && if version_gt "$(cat /etc/os-release | grep 'VERSION_ID=' | cut -d'=' -f2)" "11.99"; then PIP_ARGS="--break-system-packages"; fi \
+    && pip3 install --no-cache-dir ${PIP_ARGS} \
     awscli \
     && rm -rf /var/lib/apt/lists/*

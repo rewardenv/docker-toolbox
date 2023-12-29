@@ -12,4 +12,4 @@ RUN set -eux \
     && pip3 install --no-cache-dir \
     'ansible<2.11' \
     'hcloud' \
-    && echo "nameserver 8.8.8.8" > /etc/resolv.conf
+    && rm -rf /var/lib/apt/lists/*

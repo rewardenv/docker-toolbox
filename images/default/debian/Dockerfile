@@ -20,12 +20,15 @@ RUN set -eux \
     default-mysql-client-core \
     git-core \
     git-crypt \
+    gnupg \
     gzip \
     jq \
     openssh-client \
+    openssl \
     pigz \
     tar \
     unzip \
+    wget \
     xz-utils \
     zip \
     && git clone --depth 1 https://github.com/tfutils/tfenv.git ~/.tfenv \

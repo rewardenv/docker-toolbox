@@ -4,25 +4,30 @@
 
 A docker toolbox image based on alpine/debian/ubuntu with these tools included:
 - compression tools (bzip2, gzip, pigz, zip, xz)
-- git
+- coreutils (for advanced base64 in alpine)
 - curl
+- findutils (for advanced xargs in alpine)
+- git
+- helm
+- kubectl
+- mysql-client
+- openssl
+- openssh-client
 - tfenv
 - tgenv
-- kubectl
-- helm
-- mysql-client
-- coreutils (for advanced base64 in alpine)
-- findutils (for advanced xargs in alpine)
+- wget
 
 ## docker-toolbox-testing
 
 A docker toolbox image based on alpine/debian/ubuntu with these tools included:
 - compression tools (bzip2, gzip, pigz, zip, xz)
-- git
-- curl
 - coreutils (for advanced base64 in alpine)
+- curl
 - findutils (for advanced xargs in alpine)
+- git
+- openssl
 - trivy
+- wget
 
 # docker-toolbox-aws
 
@@ -64,7 +69,7 @@ $ docker run --rm -it rewardenv/docker-toolbox bash
 
 ```
 $ DOCKER_BASE_IMAGE=debian:bullseye-slim bash -x scripts/build.sh
-$ DOCKER_BASE_IMAGE=alpine:latest bash -x scripts/build.sh  
+$ DOCKER_BASE_IMAGE=alpine:latest bash -x scripts/build.sh
 ```
 
 ## Build additional images

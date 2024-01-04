@@ -8,20 +8,25 @@ ENV PATH="/usr/local/bin:${PATH}"
 
 RUN set -eux \
     && apt-get update && apt-get install -y --no-install-recommends \
+    apt-transport-https \
     bash \
     bzip2 \
     ca-certificates \
     curl \
     git-core \
     git-crypt \
+    gnupg \
     gzip \
     jq \
-    lsb-core \
+    lsb-release \
+    openssl \
     pigz \
     tar \
     unzip \
+    wget \
     xz-utils \
     zip \
+    && wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | apt-key add - \
     && echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | tee -a /etc/apt/sources.list.d/trivy.list \
     && apt-get update && apt-get install -y --no-install-recommends \
     trivy \

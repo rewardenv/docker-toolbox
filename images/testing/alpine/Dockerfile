@@ -16,8 +16,10 @@ RUN set -eux \
     findutils \
     git \
     git-crypt \
+    gnupg \
     gzip \
     jq \
+    openssl \
     pigz \
     tar \
     unzip \

@@ -21,13 +21,16 @@ RUN set -eux \
     findutils \
     git \
     git-crypt \
+    gnupg \
     gzip \
     jq \
     mysql-client \
     openssh-client \
+    openssl \
     pigz \
     tar \
     unzip \
+    wget \
     xz \
     zip \
     && git clone --depth 1 https://github.com/tfutils/tfenv.git ~/.tfenv \

@@ -2,7 +2,7 @@
 
 ## docker-toolbox
 
-A docker toolbox image based on alpine/debian with these tools included:
+A docker toolbox image based on alpine/debian/ubuntu with these tools included:
 - compression tools (bzip2, gzip, pigz, zip, xz)
 - git
 - curl
@@ -13,6 +13,16 @@ A docker toolbox image based on alpine/debian with these tools included:
 - mysql-client
 - coreutils (for advanced base64 in alpine)
 - findutils (for advanced xargs in alpine)
+
+## docker-toolbox-testing
+
+A docker toolbox image based on alpine/debian/ubuntu with these tools included:
+- compression tools (bzip2, gzip, pigz, zip, xz)
+- git
+- curl
+- coreutils (for advanced base64 in alpine)
+- findutils (for advanced xargs in alpine)
+- trivy
 
 # docker-toolbox-aws
 
@@ -60,5 +70,6 @@ $ DOCKER_BASE_IMAGE=alpine:latest bash -x scripts/build.sh
 ## Build additional images
 
 ```console
+$ DOCKER_BASE_IMAGE=alpine:latest FLAVOR=testing IMAGE_NAME=docker-toolbox-testing bash -x scripts/build.sh
 $ DOCKER_BASE_IMAGE=alpine:latest FLAVOR=extended FROM_IMAGE=rewardenv/docker-toolbox IMAGE_NAME=docker-toolbox-extended bash -x scripts/build.sh
 ```

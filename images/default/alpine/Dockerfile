@@ -7,7 +7,7 @@ COPY rootfs/ /
 
 WORKDIR /root
 
-ENV PATH="${HOME}/.tfenv/bin:/usr/local/bin:${PATH}"
+ENV PATH="${HOME}/.tfenv/bin:${HOME}/.tgenv/bin:/usr/local/bin:${PATH}"
 ENV HELM_VERSION=3.13.2
 ENV HELM_RELEASE_FILE="helm-v${HELM_VERSION}-linux-amd64.tar.gz"
 

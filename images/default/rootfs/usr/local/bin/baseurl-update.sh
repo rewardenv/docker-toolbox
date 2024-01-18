@@ -73,6 +73,7 @@ UPDATE ${MYSQL_SCHEME}.core_config_data SET value = "http://${BASE_URL#http*://}
 UPDATE ${MYSQL_SCHEME}.core_config_data SET value = "https://${BASE_URL#http*://}" WHERE scope = "default" AND path = "web/secure/base_url";
 UPDATE ${MYSQL_SCHEME}.core_config_data SET value = "http://${BASE_URL#http*://}" WHERE scope = "default" AND path = "web/unsecure/base_link_url";
 UPDATE ${MYSQL_SCHEME}.core_config_data SET value = "https://${BASE_URL#http*://}" WHERE scope = "default" AND path = "web/secure/base_link_url";
+UPDATE ${MYSQL_SCHEME}.core_config_data SET value = NULL WHERE scope = "default" AND path = "web/cookie/cookie_domain";
 EOF
     ;;
   * )

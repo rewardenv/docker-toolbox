@@ -69,8 +69,10 @@ case $PROJECT_TYPE in
     # Add a trailing slash if missing
     BASE_URL="${BASE_URL%/}/"
     ${MYSQL_COMMAND} ${MYSQL_ARGS} <<EOF
-UPDATE ${MYSQL_SCHEME}.core_config_data SET value = "http://${BASE_URL}" WHERE scope = "default" AND path = "web/unsecure/base_url";
-UPDATE ${MYSQL_SCHEME}.core_config_data SET value = "https://${BASE_URL}" WHERE scope = "default" AND path = "web/secure/base_url";
+UPDATE ${MYSQL_SCHEME}.core_config_data SET value = "http://${BASE_URL#http*://}" WHERE scope = "default" AND path = "web/unsecure/base_url";
+UPDATE ${MYSQL_SCHEME}.core_config_data SET value = "https://${BASE_URL#http*://}" WHERE scope = "default" AND path = "web/secure/base_url";
+UPDATE ${MYSQL_SCHEME}.core_config_data SET value = "http://${BASE_URL#http*://}" WHERE scope = "default" AND path = "web/unsecure/base_link_url";
+UPDATE ${MYSQL_SCHEME}.core_config_data SET value = "https://${BASE_URL#http*://}" WHERE scope = "default" AND path = "web/secure/base_link_url";
 EOF
     ;;
   * )

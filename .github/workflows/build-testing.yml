@@ -19,18 +19,27 @@ jobs:
             latest_tag: "true"
     steps:
       - uses: actions/checkout@v1
+
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
+        with:
+          image: mirror.gcr.io/tonistiigi/binfmt:latest
+
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
         with:
           driver-opts: image=moby/buildkit:master
+          config-inline: |
+            [registry."docker.io"]
+              mirrors = ["mirror.gcr.io"]
+
       - run: bash ./scripts/build.sh
         env:
           FLAVOR: "testing"

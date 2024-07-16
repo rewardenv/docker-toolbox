@@ -38,6 +38,7 @@ RUN <<-EOF
     echo 'alias tg=terragrunt' >> ~/.bashrc
     echo 'alias tf=tofu' >> ~/.bashrc
     echo 'alias k=kubectl' >> ~/.bashrc
+    echo 'eval "$(direnv hook bash)"' >> ~/.bashrc
     apk add tenv --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/
     BUILD_ARCH="$(apk --print-arch)"
     if [ "${BUILD_ARCH}" = "aarch64" ]; then BUILD_ARCH="arm64"; else BUILD_ARCH="amd64"; fi

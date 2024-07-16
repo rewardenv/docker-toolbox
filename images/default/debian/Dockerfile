@@ -36,6 +36,7 @@ RUN <<-EOF
     echo 'alias tg=terragrunt' >> ~/.bashrc
     echo 'alias tf=tofu' >> ~/.bashrc
     echo 'alias k=kubectl' >> ~/.bashrc
+    echo 'eval "$(direnv hook bash)"' >> ~/.bashrc
     BUILD_ARCH="$(dpkg --print-architecture)"
     curl -fsSLo /usr/local/bin/kubectl \
         "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/${BUILD_ARCH}/kubectl"

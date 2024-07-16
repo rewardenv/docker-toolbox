@@ -18,6 +18,7 @@ RUN <<-EOF
         ca-certificates \
         coreutils \
         curl \
+        direnv \
         findutils \
         git \
         git-crypt \

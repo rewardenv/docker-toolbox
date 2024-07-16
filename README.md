@@ -6,6 +6,7 @@ A docker toolbox image based on alpine/debian/ubuntu with these tools included:
 - compression tools (bzip2, gzip, pigz, zip, xz)
 - coreutils (for advanced base64 in alpine)
 - curl
+- direnv
 - findutils (for advanced xargs in alpine)
 - git
 - helm

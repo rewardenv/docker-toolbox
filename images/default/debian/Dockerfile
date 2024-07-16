@@ -18,6 +18,7 @@ RUN <<-EOF
         ca-certificates \
         curl \
         default-mysql-client-core \
+        direnv \
         git-core \
         git-crypt \
         gnupg \

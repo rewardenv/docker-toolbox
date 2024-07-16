@@ -38,4 +38,4 @@ jobs:
           LATEST_TAG: ${{ matrix.latest_tag }}
           PUSH: "true"
           DOCKER_USE_BUILDX: "true"
-          DOCKER_BUILD_PLATFORM: "linux/amd64,linux/arm/v7,linux/arm64"
+          DOCKER_BUILD_PLATFORM: "linux/amd64,linux/arm64"

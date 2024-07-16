@@ -12,7 +12,7 @@ RUN <<-EOF
     eval 'version_gt() { test "$(printf "%s\n" "$@" | sort -V | head -n 1)" != "$1"; }'
     if version_gt "$(cat /etc/os-release | grep 'VERSION_ID=' | cut -d'=' -f2 | tr -d '"')" "11"; then PIP_ARGS="--break-system-packages"; fi
     pip3 install --no-cache-dir ${PIP_ARGS} \
-        awscli \
+        awscli
     curl -fsSLo /tmp/google-cloud-sdk.tar.gz \
         https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz
     mkdir -p /usr/local/gcloud

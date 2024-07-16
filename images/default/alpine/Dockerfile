@@ -34,6 +34,9 @@ RUN <<-EOF
         xz \
         zip
     echo 'PATH=/usr/local/bin:${PATH}' >> ~/.bashrc
+    echo 'alias tg=terragrunt' >> ~/.bashrc
+    echo 'alias tf=tofu' >> ~/.bashrc
+    echo 'alias k=kubectl' >> ~/.bashrc
     apk add tenv --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/
     BUILD_ARCH="$(apk --print-arch)"
     if [ "${BUILD_ARCH}" = "aarch64" ]; then BUILD_ARCH="arm64"; else BUILD_ARCH="amd64"; fi

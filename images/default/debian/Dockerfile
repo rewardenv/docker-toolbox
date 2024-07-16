@@ -32,6 +32,9 @@ RUN <<-EOF
         xz-utils \
         zip
     echo 'PATH=/usr/local/bin:${PATH}' >> ~/.bashrc
+    echo 'alias tg=terragrunt' >> ~/.bashrc
+    echo 'alias tf=tofu' >> ~/.bashrc
+    echo 'alias k=kubectl' >> ~/.bashrc
     BUILD_ARCH="$(dpkg --print-architecture)"
     curl -fsSLo /usr/local/bin/kubectl \
         "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/${BUILD_ARCH}/kubectl"

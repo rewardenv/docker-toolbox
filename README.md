@@ -13,8 +13,7 @@ A docker toolbox image based on alpine/debian/ubuntu with these tools included:
 - mysql-client
 - openssl
 - openssh-client
-- tfenv
-- tgenv
+- tenv
 - wget
 
 ## docker-toolbox-testing
@@ -43,7 +42,6 @@ A docker toolbox image based on rewardenv/docker-toolbox with these additional t
 - google-cloud-sdk
 - python3
 - pip3
-- terraform-docs
 
 ## docker-toolbox-ansible
 

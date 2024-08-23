@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-[ "$DEBUG" = "true" ] && set -x
+[ "${DEBUG:-false}" = "true" ] && set -x
 set -eEuo pipefail
 
 log() {
-  [ "${SILENT}" != "true" ] && echo -e "INFO: $*"
+  [ "${SILENT:-false}" != "true" ] && echo -e "INFO: $*"
 }
 
 error() {
@@ -22,7 +22,7 @@ trap 'error status code: $? line: ${LINENO}' ERR
 
 usage() {
   error "$(cat <<EOF
-usage: $0 options db-dump.sql
+usage: $0 options
 Options:
 -s, --quiet: suppress messages
 --source-file: the file that should be imported

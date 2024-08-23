@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-[ "$DEBUG" = "true" ] && set -x
-set -uo pipefail
+[ "${DEBUG:-false}" = "true" ] && set -x
+set -eEuo pipefail
 
 log() {
-  [ "${SILENT}" != "true" ] && echo -e "INFO: $*"
+  [ "${SILENT:-false}" != "true" ] && echo -e "INFO: $*"
 }
 
 error() {

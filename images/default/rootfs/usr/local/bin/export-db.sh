@@ -21,7 +21,8 @@ error() {
 trap 'error status code: $? line: ${LINENO}' ERR
 
 usage() {
-  error "$(cat <<EOF
+  error "$(
+    cat <<EOF
 usage: $0 options
 Options:
 -s, --quiet: suppress messages
@@ -37,48 +38,53 @@ Options:
 --scheme: which db to import (default: db)
 -p, --procedures: dump procedures only
 EOF
-)"
+  )"
 }
 
 # Set defaults
-SILENT="${SILENT:-false}"
-TARGET_DIR="${TARGET_DIR:-/data}"
-TARGET_FILENAME="${TARGET_FILENAME:-db}"
-MYSQLDUMP_COMMAND="${MYSQLDUMP_COMMAND:-mysqldump}"
-MYSQLDUMP_ARGS="${MYSQLDUMP_ARGS:---single-transaction --quick}"
-MYSQL_HOST="${MYSQL_HOST:-mysql}"
-MYSQL_PORT="${MYSQL_PORT:-3306}"
-MYSQL_SCHEME="${MYSQL_SCHEME:-magento}"
-MYSQL_USER="${MYSQL_USER:-magento}"
-MYSQL_PASSWORD="${MYSQL_PASSWORD:-magento}"
-MYSQL_CONNECTION_ARGS=""
-FILE_EXTENSION=".sql.gz"
-COMPRESS_COMMAND="gzip -c"
-STRIP="${STRIP:-false}"
-PROJECT_TYPE="${PROJECT_TYPE:-magento}"
-PREFIX="${PREFIX:-magento}"
+: "${SILENT:=false}"
+: "${TARGET_DIR:=/data}"
+: "${TARGET_FILENAME:=db}"
+: "${MYSQLDUMP_COMMAND:=mysqldump}"
+: "${MYSQLDUMP_ARGS:=--single-transaction --quick}"
+: "${MYSQL_HOST:=mysql}"
+: "${MYSQL_PORT:=3306}"
+: "${MYSQL_SCHEME:=magento}"
+: "${MYSQL_USER:=magento}"
+: "${MYSQL_PASSWORD:=magento}"
+: "${MYSQL_CONNECTION_ARGS:=}"
+: "${FILE_EXTENSION:=.sql.gz}"
+: "${COMPRESS_COMMAND:=gzip -c}"
+: "${STRIP:=false}"
+: "${PROJECT_TYPE:=magento}"
+: "${PREFIX:=magento}"
+
+: "${MYSQLDUMP_COMMAND:=mariadb-dump}"
+if command -v mariadb-dump &>/dev/null; then
+  MYSQLDUMP_COMMAND="mariadb-dump"
+fi
 
 while test $# -gt 0; do
   case "$1" in
-    -h|--help)
+    -h | --help)
       usage
       ;;
-    -b|--bz2|--bzip2)
+    -b | --bz2 | --bzip2)
       FILE_EXTENSION=".sql.bz2"
       COMPRESS_COMMAND="bzip2"
       shift
       ;;
-    -g|--gz|--gzip)
+    -g | --gz | --gzip)
       FILE_EXTENSION=".sql.gz"
       COMPRESS_COMMAND="gzip"
       shift
       ;;
-    -x|--xz)
+    -x | --xz)
       FILE_EXTENSION=".sql.xz"
       COMPRESS_COMMAND="xz"
       shift
       ;;
-    -s|--quiet)
+    -s | --quiet)
       SILENT="true"
       shift
       ;;
@@ -114,7 +120,7 @@ while test $# -gt 0; do
       MYSQL_PASSWORD="$2"
       shift 2
       ;;
-    -p|--procedures)
+    -p | --procedures)
       MYSQLDUMP_ARGS+=" --triggers --routines --no-create-info --no-data --no-create-db --skip-opt"
       shift
       ;;
@@ -144,15 +150,15 @@ if [ -n "${MYSQL_PASSWORD}" ]; then MYSQL_CONNECTION_ARGS+=" --password=${MYSQL_
 build_strip_args() {
   if [ "${STRIP}" = "true" ]; then
     case "${PROJECT_TYPE}" in
-    "magento")
-      STRIPPED_ARGS="--no-data ${MYSQL_SCHEME} persistent_session report_compared_product_index report_event report_viewed_product_aggregated_daily report_viewed_product_aggregated_monthly report_viewed_product_aggregated_yearly report_viewed_product_index reporting_counts reporting_module_status reporting_orders reporting_system_updates reporting_users session"
-      IGNORED_TABLES_ARGS="--ignore-table=${PREFIX}.persistent_session --ignore-table=${PREFIX}.report_compared_product_index --ignore-table=${PREFIX}.report_event --ignore-table=${PREFIX}.report_viewed_product_aggregated_daily --ignore-table=${PREFIX}.report_viewed_product_aggregated_monthly --ignore-table=${PREFIX}.report_viewed_product_aggregated_yearly --ignore-table=${PREFIX}.report_viewed_product_index --ignore-table=${PREFIX}.reporting_counts --ignore-table=${PREFIX}.reporting_module_status --ignore-table=${PREFIX}.reporting_orders --ignore-table=${PREFIX}.reporting_system_updates --ignore-table=${PREFIX}.reporting_users --ignore-table=${PREFIX}.session ${MYSQL_SCHEME}"
-      ;;
-    *)
-      STRIP="false"
-      STRIPPED_ARGS=""
-      IGNORED_TABLES_ARGS=""
-      ;;
+      "magento")
+        STRIPPED_ARGS="--no-data ${MYSQL_SCHEME} persistent_session report_compared_product_index report_event report_viewed_product_aggregated_daily report_viewed_product_aggregated_monthly report_viewed_product_aggregated_yearly report_viewed_product_index reporting_counts reporting_module_status reporting_orders reporting_system_updates reporting_users session"
+        IGNORED_TABLES_ARGS="--ignore-table=${PREFIX}.persistent_session --ignore-table=${PREFIX}.report_compared_product_index --ignore-table=${PREFIX}.report_event --ignore-table=${PREFIX}.report_viewed_product_aggregated_daily --ignore-table=${PREFIX}.report_viewed_product_aggregated_monthly --ignore-table=${PREFIX}.report_viewed_product_aggregated_yearly --ignore-table=${PREFIX}.report_viewed_product_index --ignore-table=${PREFIX}.reporting_counts --ignore-table=${PREFIX}.reporting_module_status --ignore-table=${PREFIX}.reporting_orders --ignore-table=${PREFIX}.reporting_system_updates --ignore-table=${PREFIX}.reporting_users --ignore-table=${PREFIX}.session ${MYSQL_SCHEME}"
+        ;;
+      *)
+        STRIP="false"
+        STRIPPED_ARGS=""
+        IGNORED_TABLES_ARGS=""
+        ;;
     esac
   fi
 }

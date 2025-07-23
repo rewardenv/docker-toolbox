@@ -3,12 +3,14 @@ ARG IMAGE_TAG="jammy"
 FROM ${IMAGE_NAME}:${IMAGE_TAG}
 
 COPY rootfs/ /
+COPY --from=mikefarah/yq /usr/bin/yq /usr/bin/yq
 
 WORKDIR /root
 
 ENV PATH="/usr/local/bin:${PATH}"
-ENV HELM_VERSION=3.13.2
+ENV HELM_VERSION=3.17.4
 ENV TENV_AUTO_INSTALL=true
+ENV TENV_VERSION=4.7.6
 
 RUN <<-EOF
     set -eux
@@ -43,7 +45,7 @@ RUN <<-EOF
     cd /tmp
     curl -fsSL "https://get.helm.sh/helm-v${HELM_VERSION}-linux-${BUILD_ARCH}.tar.gz" | tar xvz
     mv linux-${BUILD_ARCH}/helm /usr/local/bin/helm
-    curl -fsSLo /tmp/tenv.deb "https://github.com/tofuutils/tenv/releases/latest/download/tenv_$(curl --silent https://api.github.com/repos/tofuutils/tenv/releases/latest | jq -r .tag_name)_${BUILD_ARCH}.deb"
+    curl -fsSLo /tmp/tenv.deb "https://github.com/tofuutils/tenv/releases/latest/download/tenv_v${TENV_VERSION}_${BUILD_ARCH}.deb"
     dpkg -i tenv.deb
     chmod +x /usr/local/bin/helm
     chmod +x /usr/local/bin/kubectl

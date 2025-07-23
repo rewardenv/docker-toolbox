@@ -67,7 +67,7 @@ $ docker run --rm -it rewardenv/docker-toolbox bash
 ## Build base image
 
 ```
-$ DOCKER_BASE_IMAGE=debian:bullseye-slim bash -x scripts/build.sh
+$ DOCKER_BASE_IMAGE=debian:bookworm-slim bash -x scripts/build.sh
 $ DOCKER_BASE_IMAGE=alpine:latest bash -x scripts/build.sh
 ```
 

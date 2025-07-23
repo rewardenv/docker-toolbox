@@ -7,7 +7,7 @@ COPY rootfs/ /
 WORKDIR /root
 
 ENV PATH="/usr/local/bin:${PATH}"
-ENV HELM_VERSION=3.13.2
+ENV HELM_VERSION=3.17.4
 ENV TENV_AUTO_INSTALL=true
 
 RUN <<-EOF
@@ -33,6 +33,7 @@ RUN <<-EOF
         unzip \
         wget \
         xz \
+        yq \
         zip
     echo 'PATH=/usr/local/bin:${PATH}' >> ~/.bashrc
     echo 'alias tg=terragrunt' >> ~/.bashrc

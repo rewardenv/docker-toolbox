@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        docker_base_images: [ "alpine:3.20", "debian:bullseye-slim", "debian:bookworm-slim", "ubuntu:jammy" ]
+        docker_base_images: [ "alpine:3.20","debian:bookworm-slim", "ubuntu:jammy" ]
         latest_tag: ["false"]
         include:
           - docker_base_images: "alpine:latest"
